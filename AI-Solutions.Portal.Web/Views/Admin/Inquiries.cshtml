@@ -1,0 +1,92 @@
+@model IEnumerable<AI_Solutions.Portal.Web.Models.Entities.Inquiry>
+
+@{
+    ViewData["Title"] = "Customer Inquiries";
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i>@TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-2"></i>@TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="fw-bold mb-0">Customer Inquiries</h1>
+        <p class="text-muted mb-0">All job requirement submissions from the Contact Us form</p>
+    </div>
+    <a class="btn btn-success" asp-action="ExportCsv">
+        <i class="bi bi-download me-2"></i>Export to CSV
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Company</th>
+                        <th>Country</th>
+                        <th>Job Category</th>
+                        <th>Job Title</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><span class="badge bg-light text-dark border">#@item.InquiryId</span></td>
+                            <td>@item.CreatedDate.ToString("yyyy-MM-dd")</td>
+                            <td class="fw-semibold">@item.Customer.FullName</td>
+                            <td><a href="mailto:@item.Customer.Email">@item.Customer.Email</a></td>
+                            <td>@item.Customer.CompanyName</td>
+                            <td>@item.Customer.Country</td>
+                            <td><span class="badge bg-info text-dark rounded-pill">@item.JobCategory</span></td>
+                            <td>@item.JobTitle</td>
+                            <td><span class="badge bg-primary rounded-pill">@item.Status</span></td>
+                            <td class="text-end">
+                                <div class="btn-group" role="group" aria-label="Inquiry actions">
+                                    <a class="btn btn-outline-primary btn-sm" asp-action="Edit" asp-route-id="@item.InquiryId" title="Edit inquiry">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a class="btn btn-outline-info btn-sm" asp-action="SendEmail" asp-route-id="@item.InquiryId" title="Send email">
+                                        <i class="bi bi-envelope"></i>
+                                    </a>
+                                    <form asp-action="Delete" asp-route-id="@item.InquiryId" method="post" class="d-inline"
+                                          onsubmit="return confirm('Are you sure you want to delete this inquiry?');">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete inquiry">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="10" class="bg-light">
+                                <small class="text-muted"><strong>Details:</strong> @item.JobDetails</small>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

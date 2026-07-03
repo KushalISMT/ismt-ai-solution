@@ -1,0 +1,36 @@
+@model IEnumerable<AI_Solutions.Portal.Web.Models.Entities.CaseStudy>
+
+@{
+    ViewData["Title"] = "Case Studies";
+}
+
+<div class="page-header">
+    <h1 class="display-5">Past Solutions & Case Studies</h1>
+    <p>Real-world results from industries that trusted AI-Solutions.</p>
+</div>
+
+<div class="row g-4">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="feature-icon mb-0 me-3" style="width: 50px; height: 50px; font-size: 1.4rem;">
+                            <i class="bi bi-briefcase"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-1">@item.Title</h5>
+                            <small class="text-muted">@item.ClientName - @item.Industry</small>
+                        </div>
+                    </div>
+                    <p class="card-text text-muted">@item.Description</p>
+                    <div class="alert alert-success border-0" role="alert">
+                        <strong><i class="bi bi-check-circle me-2"></i>Outcome:</strong> @item.Outcome
+                    </div>
+                    <small class="text-muted"><strong>Solution:</strong> @item.Solution?.Title</small>
+                </div>
+            </div>
+        </div>
+    }
+</div>

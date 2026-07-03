@@ -1,0 +1,152 @@
+@using System.Text.Json
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    var inquiriesByCountry = ViewBag.InquiriesByCountry as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
+    var inquiriesByJobCategory = ViewBag.InquiriesByJobCategory as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="fw-bold mb-0">Admin Dashboard</h1>
+        <p class="text-muted mb-0">Overview of customer inquiries and feedback</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-primary" asp-action="Feedback">
+            <i class="bi bi-chat-square-heart me-2"></i>Manage Feedback
+        </a>
+        <a class="btn btn-primary" asp-action="Inquiries">
+            <i class="bi bi-list-ul me-2"></i>View All Inquiries
+        </a>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card stat-primary">
+            <i class="bi bi-envelope stat-icon"></i>
+            <div class="stat-value">@ViewBag.TotalInquiries</div>
+            <div class="stat-label">Total Inquiries</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card stat-success">
+            <i class="bi bi-people stat-icon"></i>
+            <div class="stat-value">@ViewBag.TotalCustomers</div>
+            <div class="stat-label">Total Customers</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card stat-info">
+            <i class="bi bi-chat-square-heart stat-icon"></i>
+            <div class="stat-value">@ViewBag.TotalFeedbacks</div>
+            <div class="stat-label">Feedbacks</div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card stat-warning">
+            <i class="bi bi-star-fill stat-icon"></i>
+            <div class="stat-value">@ViewBag.AverageRating</div>
+            <div class="stat-label">Avg Rating</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body p-4">
+                <h5 class="card-title mb-3"><i class="bi bi-globe me-2 text-primary"></i>Inquiries by Country</h5>
+                <div class="chart-container">
+                    <canvas id="countryChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body p-4">
+                <h5 class="card-title mb-3"><i class="bi bi-tags me-2 text-primary"></i>Inquiries by Job Category</h5>
+                <div class="chart-container">
+                    <canvas id="jobCategoryChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .chart-container {
+            position: relative;
+            height: 320px;
+            width: 100%;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+        const countryData = @Html.Raw(JsonSerializer.Serialize(inquiriesByCountry));
+        const jobCategoryData = @Html.Raw(JsonSerializer.Serialize(inquiriesByJobCategory));
+
+        const countryPalette = [
+            '#0d6efd', '#20c997', '#fd7e14', '#6610f2',
+            '#dc3545', '#0dcaf0', '#198754', '#6f42c1'
+        ];
+
+        new Chart(document.getElementById('countryChart'), {
+            type: 'doughnut',
+            data: {
+                labels: countryData.map(d => d.Country),
+                datasets: [{
+                    data: countryData.map(d => d.Count),
+                    backgroundColor: countryPalette,
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { usePointStyle: true, padding: 16 }
+                    }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('jobCategoryChart'), {
+            type: 'bar',
+            data: {
+                labels: jobCategoryData.map(d => d.JobCategory),
+                datasets: [{
+                    label: 'Inquiries',
+                    data: jobCategoryData.map(d => d.Count),
+                    backgroundColor: '#0d6efd',
+                    borderRadius: 8,
+                    barPercentage: 0.6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    </script>
+}

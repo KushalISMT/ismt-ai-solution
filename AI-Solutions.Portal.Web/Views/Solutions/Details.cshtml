@@ -1,0 +1,48 @@
+@model AI_Solutions.Portal.Web.Models.Entities.Solution
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="page-header text-start">
+    <div class="d-flex align-items-center mb-3">
+        <div class="feature-icon mb-0 me-3" style="width: 56px; height: 56px; font-size: 1.6rem;">
+            <i class="bi bi-stars"></i>
+        </div>
+        <div>
+            <h1 class="fw-bold mb-0">@Model.Title</h1>
+            <p class="text-muted mb-0">@Model.Industry</p>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body p-4">
+        <p class="lead">@Model.Description</p>
+        <p class="mb-0"><strong>Technologies:</strong> <span class="badge bg-light text-dark border">@Model.Technologies</span></p>
+    </div>
+</div>
+
+@if (Model.CaseStudies.Any())
+{
+    <h3 class="fw-bold mb-4">Related Case Studies</h3>
+    <div class="row g-4 mb-4">
+        @foreach (var caseStudy in Model.CaseStudies)
+        {
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body p-4">
+                        <h5 class="card-title">@caseStudy.Title</h5>
+                        <h6 class="card-subtitle mb-2">@caseStudy.ClientName - @caseStudy.Industry</h6>
+                        <p class="card-text text-muted">@caseStudy.Description</p>
+                        <p class="card-text"><strong>Outcome:</strong> @caseStudy.Outcome</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<a asp-action="Index" class="btn btn-secondary">
+    <i class="bi bi-arrow-left me-1"></i> Back to Solutions
+</a>

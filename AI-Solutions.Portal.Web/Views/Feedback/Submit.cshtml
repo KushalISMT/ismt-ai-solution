@@ -1,0 +1,124 @@
+@model AI_Solutions.Portal.Web.Models.ViewModels.FeedbackFormViewModel
+
+@{
+    ViewData["Title"] = "Leave Feedback";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="page-header text-center">
+            <h1 class="display-5">Share Your Experience</h1>
+            <p>We value your feedback. Let us know how AI-Solutions helped your business.</p>
+        </div>
+
+        <div class="card">
+            <div class="card-body p-4 p-md-5">
+                <form asp-action="Submit" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="CustomerName" class="form-label"></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+                                <input asp-for="CustomerName" class="form-control" placeholder="John Smith" />
+                            </div>
+                            <span asp-validation-for="CustomerName" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="CompanyName" class="form-label"></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-building"></i></span>
+                                <input asp-for="CompanyName" class="form-control" placeholder="Acme Ltd" />
+                            </div>
+                            <span asp-validation-for="CompanyName" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Rating" class="form-label"></label>
+                        <input type="hidden" asp-for="Rating" id="rating-input" />
+                        <div class="star-rating" id="star-rating">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <i class="bi bi-star" data-value="@i"></i>
+                            }
+                        </div>
+                        <span asp-validation-for="Rating" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Comment" class="form-label"></label>
+                        <textarea asp-for="Comment" class="form-control" rows="5" placeholder="Tell us about your experience..."></textarea>
+                        <span asp-validation-for="Comment" class="text-danger small"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2">
+                        <i class="bi bi-send me-2"></i>Submit Feedback
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .star-rating {
+            font-size: 1.75rem;
+            cursor: pointer;
+            color: #e0e0e0;
+            user-select: none;
+        }
+
+        .star-rating i {
+            transition: color 0.2s ease;
+            padding: 0 4px;
+        }
+
+        .star-rating i.selected,
+        .star-rating i.hovered {
+            color: #ffc107;
+        }
+    </style>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(function () {
+            var $stars = $('#star-rating i');
+            var $input = $('#rating-input');
+
+            function setStars(value) {
+                value = parseInt(value) || 0;
+                $stars.each(function () {
+                    var starValue = $(this).data('value');
+                    $(this).removeClass('bi-star-fill selected').addClass('bi-star');
+                    if (starValue <= value) {
+                        $(this).removeClass('bi-star').addClass('bi-star-fill selected');
+                    }
+                });
+            }
+
+            $stars.on('mouseenter', function () {
+                var hoverValue = $(this).data('value');
+                $stars.each(function () {
+                    var starValue = $(this).data('value');
+                    $(this).toggleClass('hovered', starValue <= hoverValue);
+                });
+            }).on('mouseleave', function () {
+                $stars.removeClass('hovered');
+            });
+
+            $stars.on('click', function () {
+                var value = $(this).data('value');
+                $input.val(value);
+                setStars(value);
+            });
+
+            // Initialise on page load (also preserves value after validation error)
+            setStars($input.val());
+        });
+    </script>
+}
